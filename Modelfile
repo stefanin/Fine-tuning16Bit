@@ -1,0 +1,21 @@
+# 1. Specifica il percorso del tuo modello locale.
+# DEVI USARE IL PERCORSO ASSOLUTO!
+FROM ./modello-unito-soprannomi-16bit
+
+# 2. Definisci il template della chat.
+# Questo è FONDAMENTALE e deve corrispondere a quello usato nel training.
+TEMPLATE """<|im_start|>system
+{{ .System }}<|im_end|>
+<|im_start|>user
+{{ .Prompt }}<|im_end|>
+<|im_start|>assistant
+"""
+
+# 3. Imposta un system prompt di default.
+# Sarà usato se non ne fornisci uno diverso.
+SYSTEM """Sei un assistente che conosce i soprannomi delle persone."""
+
+# 4. (Opzionale) Imposta dei parametri di default per la generazione.
+PARAMETER temperature 0.7
+PARAMETER stop <|im_start|>
+PARAMETER stop <|im_end|>

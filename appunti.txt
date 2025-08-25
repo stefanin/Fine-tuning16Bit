@@ -1,0 +1,60 @@
+.\python-3.11.9\python.exe -m venv .venv
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+.\.venv\Scripts\Activate.ps1
+python.exe -m pip install --upgrade pip
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install transformers==4.41.2 peft==0.10.0 trl==0.8.6 accelerate==0.30.1 datasets
+pip install optimum auto-gptq # <-- Le nuove librerie per la quantizzazione
+python.exe .\finetune_16bit.py
+python.exe .\merge_model.py
+python.exe .\usa_modello_unito.py
+
+..................... seconda fase .....................
+
+Dataset è Troppo Piccolo (La Più Probabile)
+
+Causa 2: "Catastrophic Forgetting" e Parametri di Training
+Cos'è: Il "Catastrophic Forgetting" (oblio catastrofico) è un fenomeno in cui un modello, imparando un nuovo compito molto specifico (i tuoi 3 soprannomi), "dimentica" le sue capacità linguistiche generali.
+Sintomi: Il modello potrebbe dare risposte che sono sintatticamente corrette ma senza senso, o potrebbe ripetere a pappagallo parti del prompt.
+Iperparametri: I parametri di training, come il learning_rate (tasso di apprendimento) e il num_train_epochs (numero di epoche), hanno un grande impatto.
+Learning Rate Troppo Alto: Un learning_rate di 2e-4 è abbastanza standard, ma con un dataset così piccolo, potrebbe essere troppo aggressivo, portando il modello a "sovrascrivere" le sue conoscenze in modo caotico.
+Troppe Epoche: Hai usato 10 epoche. Con un dataset di 3 esempi, significa che il modello ha visto ogni esempio 10 volte. Questo aumenta il rischio di overfitting, cioè il modello impara a memoria le tue 3 risposte ma non capisce la regola generale. Quando gli chiedi di nuovo la stessa domanda, potrebbe dare una risposta leggermente diversa perché ha imparato a memoria in modo "instabile".
+Soluzioni:
+Aumenta il dataset (questa è sempre la soluzione migliore).
+Riduci il learning_rate: Prova con un valore più basso, come 5e-5 o 2e-5.
+Riduci il numero di epoche: Con un dataset più grande (es. 50 esempi), 3 epoche sono spesso sufficienti. Con 3 esempi, anche 10 potrebbero essere troppe.
+Causa 3: Il Prompt per l'Inferenza non Corrisponde Esattamente
+È fondamentale che il prompt che usi per interrogare il modello (usa_modello_unito.py) segua esattamente la stessa struttura di quello usato per il training (finetune_16bit.py).
+Assicurati che ogni parte, inclusi gli spazi e le nuove righe, sia identica:
+<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{instruction}<|im_end|>\n<|im_start|>assistant\n
+Anche una piccola differenza può "confondere" il modello e portarlo a dare risposte di qualità inferiore.
+Piano d'Azione Consigliato
+Arricchisci il Tuo Dataset: Questo è il passo più importante. Aggiungi almeno altri 20-30 esempi al tuo file prova.json. Inventali se necessario. L'obiettivo è dare al modello più materiale su cui imparare.
+Modifica gli Iperparametri: Nel tuo script finetune_16bit.py, prova a fare queste modifiche:
+code
+Python
+training_arguments = TrainingArguments(
+    # ...
+    num_train_epochs=3,      # Riduci a 3, specialmente con più dati
+    learning_rate=5e-5,      # Usa un learning rate più "cauto"
+    # ...
+)
+
+tenendo conto del seguenti dati :
+{"instruction": "Qual è il sopranome di Stefano","input": "","output": "Il sopranome di Stefano è Stefanin"}
+{"instruction": "Qual è il sopranome di Guglielmo","input": "","output": "Il sopranome di Guglielmo è Mumelmo"}
+{"instruction": "Qual è il sopranome di Giulio","input": "","output": "Il sopranome di Giulio è Zulio"}
+puoi generare un file json prova2,json con queste 3 righe e altri 100 righe con nomi e soprannomi a tuo piacimento
+
+
+importare in ollama
+crea Modelfile
+ollama create soprannomi-bot -f ./Modelfile
+
+
+addestramento con file mag.json
+
+riproviamo con altri dati, il file mag.json contiene i dati di un magazzino, la colonna id e un indice numerico e non serve, cod =codice del prodotto, des =descrizione, qta = qualtita, sc = in contenitore, img e doc sono da escludere come ll campo id. mi serve un dataset per addestrare un bot in odo che possa ciedregli il codiche e mi deve rispondere se esiste, la quantita, il contenitore e la descrizione. se non esiste uno simile o se ne esiste piu di uno elencarli tutti
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+.\.venv\Scripts\Activate.ps1
+
