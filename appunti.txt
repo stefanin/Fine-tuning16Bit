@@ -1,3 +1,8 @@
+
+Per un utilizzo compatibile con la GPU: NVIDIA GeForce RTX 3080, serve la release Python 3.11.9
+
+Esegui l'installazione personalizzata nella directory di lavoro escludento tutti i flag, crea il venv per isolare l'ambiente
+
 .\python-3.11.9\python.exe -m venv .venv
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 .\.venv\Scripts\Activate.ps1
@@ -9,7 +14,7 @@ python.exe .\finetune_16bit.py
 python.exe .\merge_model.py
 python.exe .\usa_modello_unito.py
 
-..................... seconda fase .....................
+..................... seconda fase ..................... dati magazzino
 
 Dataset è Troppo Piccolo (La Più Probabile)
 
@@ -46,15 +51,18 @@ tenendo conto del seguenti dati :
 {"instruction": "Qual è il sopranome di Giulio","input": "","output": "Il sopranome di Giulio è Zulio"}
 puoi generare un file json prova2,json con queste 3 righe e altri 100 righe con nomi e soprannomi a tuo piacimento
 
-
+## Ollama
 importare in ollama
 crea Modelfile
 ollama create soprannomi-bot -f ./Modelfile
 
 
-addestramento con file mag.json
+##Addestramento con file mag.json
 
 riproviamo con altri dati, il file mag.json contiene i dati di un magazzino, la colonna id e un indice numerico e non serve, cod =codice del prodotto, des =descrizione, qta = qualtita, sc = in contenitore, img e doc sono da escludere come ll campo id. mi serve un dataset per addestrare un bot in odo che possa ciedregli il codiche e mi deve rispondere se esiste, la quantita, il contenitore e la descrizione. se non esiste uno simile o se ne esiste piu di uno elencarli tutti
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 .\.venv\Scripts\Activate.ps1
+python 05finetune_16bit.py
+python 06merge_model.py
+python 07magazzino-bot.py
 
