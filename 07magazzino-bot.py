@@ -4,11 +4,11 @@
 # pip install accelerate transformers peft torch
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-
+from CFG import directoryM
 # --- 1. Definisci il Percorso del Tuo Modello ---
 
 # Questo ora è un "model name" locale, la tua cartella.
-model_path = "./modello-magazzino-bot-16bit"
+model_path = directoryM+"modello-magazzino-bot-16bit"
 
 print(f"--- Caricamento del modello fine-tunato da: {model_path} ---")
 # --- 2. Carica il Modello e il Tokenizer ---

@@ -1,17 +1,17 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
-
+from CFG import directoryM
 # --- 1. Definisci i Nomi/Percorsi ---
 
 # Il modello base che hai usato per il training (la versione a precisione piena)
 base_model_name = "Qwen/Qwen2-0.5B-Instruct"
 
 # La cartella dove hai salvato i tuoi adattatori LoRA dal training a 16-bit
-adapter_path = "./magazzino-bot-16bit"
+adapter_path = directoryM+"magazzino-bot-16bit"
 
 # La cartella dove salvare il modello finale unito
-output_dir = "./modello-magazzino-bot-16bit"
+output_dir = directoryM+"modello-magazzino-bot-16bit"
 
 print("--- Caricamento del modello base a 16-bit ---")
 # --- 2. Carica il Modello Base e il Tokenizer ---

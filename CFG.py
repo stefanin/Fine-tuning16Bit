@@ -1,0 +1,2 @@
+
+directoryM = "./MODELLI/"

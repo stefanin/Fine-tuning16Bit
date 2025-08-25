@@ -8,7 +8,7 @@ from transformers import (
 )
 from peft import LoraConfig, get_peft_model
 from trl import SFTTrainer
-
+from CFG import directoryM
 # --- 2. Caricamento Modello e Tokenizer (METODO A 16-BIT) ---
 
 # Usiamo il modello base standard, NON la versione GPTQ
@@ -61,7 +61,7 @@ model = get_peft_model(model, lora_config)
 
 # --- 5. Argomenti di Training ---
 training_arguments = TrainingArguments(
-    output_dir="./magazzino-bot-16bit",
+    output_dir= directoryM+"magazzino-bot-16bit",
     num_train_epochs=3,
     per_device_train_batch_size=1, # Partiamo con 1 per sicurezza con la VRAM
     gradient_accumulation_steps=4, # Compensiamo il batch size piccolo
