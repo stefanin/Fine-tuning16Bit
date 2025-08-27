@@ -4,7 +4,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 # --- 1. Definisci il Percorso del Tuo Modello ---
 
 # Questo ora è un "model name" locale, la tua cartella.
-model_path = "./modello-unito-soprannomi-16bit"
+model_path = directoryM+"/modello-unito-soprannomi-16bit"
 
 print(f"--- Caricamento del modello fine-tunato da: {model_path} ---")
 # --- 2. Carica il Modello e il Tokenizer ---

@@ -3,13 +3,14 @@ Per un utilizzo compatibile con la GPU: NVIDIA GeForce RTX 3080, serve la releas
 
 Esegui l'installazione personalizzata nella directory di lavoro escludento tutti i flag, crea il venv per isolare l'ambiente
 
-.\python-3.11.9\python.exe -m venv .venv
+.\python-3.11.9\python.exe -m venv venv
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-.\.venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 python.exe -m pip install --upgrade pip
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 pip install transformers==4.41.2 peft==0.10.0 trl==0.8.6 accelerate==0.30.1 datasets
 pip install optimum auto-gptq # <-- Le nuove librerie per la quantizzazione
+pip install flask
 python.exe .\finetune_16bit.py
 python.exe .\merge_model.py
 python.exe .\usa_modello_unito.py
@@ -66,3 +67,6 @@ python 05finetune_16bit.py
 python 06merge_model.py
 python 07magazzino-bot.py
 
+
+
+   api_url = f"https://sclab.altervista.org/gm/api/cerca_componente.php?cod={potential_code}"

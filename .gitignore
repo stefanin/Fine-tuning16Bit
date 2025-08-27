@@ -1,2 +1,4 @@
 python-3.11.9/
 MODELLI/
+__pycache__/
+venv/

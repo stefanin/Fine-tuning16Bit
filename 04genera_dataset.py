@@ -1,6 +1,7 @@
 import json
 import random
 
+
 def pulisci_dati(dati_grezzi):
     """Estrae e pulisce i dati rilevanti dal file JSON di input."""
     # Trova la sezione 'table' e estrai la lista 'data'
