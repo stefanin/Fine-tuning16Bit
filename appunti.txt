@@ -70,3 +70,108 @@ python 07magazzino-bot.py
 
 
    api_url = f"https://sclab.altervista.org/gm/api/cerca_componente.php?cod={potential_code}"
+
+
+   rasberry
+
+ssh casa@192.168.1.100
+
+#Aumento della RAM con file su pendrive
+
+fdisk -l 
+
+.....
+
+Disk /dev/sda: 28.65 GiB, 30765219840 bytes, 60088320 sectors
+Disk model: Ultra USB 3.0
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x0049b5df
+
+.....
+
+creare un unica partizione
+
+fdisk /dev/sda
+
+/dev/sda1        2048 60088319 60086272 28.7G 83 Linux
+
+mkfs.ext4 /dev/sda1
+mkdir /mnt/usb
+mount /dev/sda1 /mnt/usb
+fallocate -l 10G /mnt/usb/swapfile # Crea un file di swap da 10GB, puoi aumentare se necessario
+chmod 600 /mnt/usb/swapfile
+mkswap /mnt/usb/swapfile
+
+mkswap /mnt/usb/swapfile
+Setting up swapspace version 1, size = 10 GiB (10737414144 bytes)
+no label, UUID=8b8cb304-2792-4f92-bc22-ed862a6c9c8f
+
+free
+               total        used        free      shared  buff/cache   available
+Mem:          426832      145088      106988         380      240944      281744
+Swap:         524284       53816      470468
+
+swapon /mnt/usb/swapfile
+
+free
+               total        used        free      shared  buff/cache   available
+Mem:          426832      144084      112064         380      236856      282748
+Swap:       11010040       53816    10956224
+
+
+blkid
+/dev/mmcblk0p1: LABEL_FATBOOT="bootfs" LABEL="bootfs" UUID="EC36-4DE1" BLOCK_SIZE="512" TYPE="vfat" PARTUUID="2ff94733-01"
+/dev/mmcblk0p2: LABEL="rootfs" UUID="d4cc7d63-da78-48ad-9bdd-64ffbba449a8" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="2ff94733-02"
+/dev/sda1: UUID="a170fa5e-833e-4954-b6cf-153d95d5ce46" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="0049b5df-01"
+
+
+nano /etc/fstab
+
+UUID=a170fa5e-833e-4954-b6cf-153d95d5ce46 /mnt/usb ext4 defaults,nofail 0 2 # mount della pendrive
+# Riga per attivare lo swap file sulla pendrive
+/mnt/usb/swapfile none swap sw 0 0
+
+init 6
+
+free
+               total        used        free      shared  buff/cache   available
+Mem:          426320      136352      232460        2428      111124      289968
+Swap:       11010040           0    11010040
+
+
+
+
+vcgencmd measure_temp # controlla la temperatura
+
+htop per tenere sotto controllo la cpu e ram
+apt install glances # simile a htop
+
+apt install docker.io docker-compose -y
+usermod -aG docker $USER 
+newgrp docker
+
+
+
+API_URL_PHP = "https://sclab.altervista.org/gm/api/cerca_componente.php"
+
+
+scp -r .\magazzino-ai casa@192.168.1.100:/home/casa/
+ 
+docker-compose.yml                                                                                                                                 100%  508    82.7KB/s   00:00    
+app.py                                                                                                                                             100% 2559   416.5KB/s   00:00    
+Dockerfile                                                                                                                                         100%  261    42.5KB/s   00:00    
+requirements.txt                                                                                                                                   100%   23     4.5KB/s   00:00    
+index.html                                                                                                                                         100% 4695   917.0KB/s   00:00    
+
+
+# Avvia la nuova architettura
+docker-compose up -d --build
+
+docker exec -it ollama_service ollama pull tinyllama
+docker exec -it ollama_service ollama list
+docker exec -it ollama_service ollama cp tinyllama tinyllama-magazzino
+
+docker exec -it ollama_service /bin/bash

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama_service
+    volumes:
+      - ./ollama_data:/root/.ollama
+    # Non esponiamo la porta di ollama, la comunicazione avverrà sulla rete interna di Docker
+    restart: unless-stopped
+
+  web_app:
+    build: ./web_app
+    container_name: magazzino_webapp
+    ports:
+      - "1908:5000" # Mappa la porta 1908 del tuo Pi alla porta 5000 del container
+    depends_on:
+      - ollama
+    restart: unless-stopped

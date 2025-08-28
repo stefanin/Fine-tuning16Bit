@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente Magazzino AI</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .chat-container { width: 90%; max-width: 800px; height: 90vh; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .chat-header { background-color: #4A90E2; color: white; padding: 15px; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center; }
+        .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; border-bottom: 1px solid #ddd; }
+        .message { margin-bottom: 15px; display: flex; }
+        .message.user .message-content { background-color: #dcf8c6; margin-left: auto; border-radius: 10px 10px 0 10px; }
+        .message.assistant .message-content { background-color: #f1f0f0; border-radius: 10px 10px 10px 0; }
+        .message-content { padding: 10px 15px; max-width: 80%; }
+        .chat-input { display: flex; padding: 15px; }
+        #message-input { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        #send-button { padding: 10px 20px; margin-left: 10px; border: none; background-color: #4A90E2; color: white; border-radius: 20px; cursor: pointer; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Assistente Magazzino AI</h2>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messaggi verranno aggiunti qui -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Scrivi la tua domanda qui...">
+            <button id="send-button">Invia</button>
+        </div>
+        <div class="spinner" id="spinner"></div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const spinner = document.getElementById('spinner');
+
+        function addMessage(sender, text) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            const contentElement = document.createElement('div');
+            contentElement.classList.add('message-content');
+            contentElement.innerText = text;
+            messageElement.appendChild(contentElement);
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const query = messageInput.value.trim();
+            if (query === '') return;
+
+            addMessage('user', query);
+            messageInput.value = '';
+            spinner.style.display = 'block';
+            sendButton.disabled = true;
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Errore del server: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                addMessage('assistant', data.answer || "Non ho ricevuto una risposta valida.");
+            } catch (error) {
+                addMessage('assistant', `Errore: ${error.message}`);
+            } finally {
+                spinner.style.display = 'none';
+                sendButton.disabled = false;
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        addMessage('assistant', 'Ciao! Come posso aiutarti con il magazzino oggi?');
+    </script>
+</body>
+</html>
